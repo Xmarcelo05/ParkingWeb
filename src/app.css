@@ -1,0 +1,313 @@
+/* 1. VARIABLES Y ESTILOS GLOBALES */
+:root {
+  --primary: #004AAD;
+  --primary-dark: #003580;
+  --danger: #dc3545;
+  --danger-dark: #b91c1c;
+  --success: #28a745;
+  --bg: #e8eaf0;
+  --card: #ffffff;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --border: #d1d5db;
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-hover: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  position: relative;
+}
+
+
+body::before {
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  filter: blur(4px);
+  z-index: -1;
+}
+
+/* 2. CONTENEDORES Y LAYOUT */
+.container {
+  max-width: 1280px;
+  margin: 30px auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(5px);
+}
+
+header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  padding: 18px 24px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,74,173,0.2);
+}
+
+header h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: 0.5px; }
+
+.main-layout { display: flex; gap: 20px; }
+.left-panel { width: 360px; display: flex; flex-direction: column; gap: 16px; }
+
+/* Paneles de Información */
+.info-panel, .info-box, #resultadoSalida {
+  background: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.info-panel > div, #resultadoSalida div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 0.95rem;
+  color: var(--text);
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-panel > div:last-child, #resultadoSalida div:last-child { border-bottom: none; }
+
+.info-panel span {
+  font-weight: 700;
+  color: var(--primary);
+  background: #f9fafb;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+/* Estilos específicos para caja de instrucciones */
+.info-box h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.1rem; }
+.info-box p, .info-box li { font-size: 0.9rem; color: var(--text-muted); }
+.info-box ol { padding-left: 20px; margin: 10px 0; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .main-layout { flex-direction: column; }
+  .left-panel { width: 100%; order: 2; }
+  .map-container { order: 1; }
+}
+
+/* 3. MAPA Y PLAZAS (Estacionamiento) */
+.map-container {
+  position: relative;
+  width: 100%; /* Ocupa todo el ancho disponible */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1f2937; /* Fondo oscuro por si la imagen tarda en cargar */
+  box-shadow: var(--shadow);
+  /* El contenedor del mapa se ajusta al tamaño de la imagen */
+  display: flex; 
+  align-items: flex-start;
+}
+
+.map-container img {
+  width: 100%;      
+  height: auto;     /* La altura se calcula sola según la proporción de la imagen */
+  display: block;   /* Evita un pequeño espacio blanco debajo de la imagen */
+  object-fit: contain; /* Asegura que la imagen nunca se recorte */
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;         /* Se pega a los 4 bordes del contenedor */
+  pointer-events: none;
+}
+
+.plaza {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #10b981 0%, var(--success) 100%);
+  border-radius: 4px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  user-select: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  /* Para evitar que el contenido se extienda más allá del borde */
+  box-sizing: border-box; 
+}
+
+.plaza:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.plaza.ocupada {
+  background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+}
+
+/* 4. BOTONES */
+/* Botón Base */
+button, .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  background-color: var(--primary);
+  color: white;
+  text-decoration: none;
+}
+
+button:hover, .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+button:active, .btn:active { transform: translateY(0); }
+
+/* Variantes de Botones */
+.btn.ingreso { background: linear-gradient(135deg, var(--primary) 0%, #0056d6 100%); }
+.btn.salida, .btn.danger { background: linear-gradient(135deg, var(--danger) 0%, #e74c5c 100%); }
+
+.btn.small {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn.small:hover { background: #f9fafb; border-color: var(--text-muted); }
+
+/* Botones Grandes del Home */
+.buttons-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  background: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.buttons-row button {
+  width: 100%;
+  height: 120px; /* Botones cuadrados grandes */
+  flex-direction: column;
+  font-size: 1.1rem;
+}
+
+.buttons-row img { width: 48px; height: 48px; margin-bottom: 8px; }
+
+.footer-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+.footer-buttons button { flex: 1; }
+
+/* 5. MODALES Y TABLAS */
+.modal {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-content, .modal-content2 {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  width: 95%;
+}
+.modal-content { max-width: 400px; }
+.modal-content2 { max-width: 800px; } /* Para la tabla ancha */
+
+.close {
+  position: absolute; right: 20px; top: 15px;
+  font-size: 24px; color: var(--text-muted);
+  cursor: pointer;
+}
+.close:hover { color: var(--danger); }
+
+/* Tabla */
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th { background: var(--primary); color: #fff; text-align: left; padding: 12px; }
+td { padding: 12px; border-bottom: 1px solid #eee; }
+tr:hover { background: #f9fafb; }
+
+/* 6. FORMULARIOS (Login, Registro, Modales) */
+form { display: flex; flex-direction: column; gap: 15px; }
+
+label { font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block; }
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 74, 173, 0.1);
+}
+
+/* Estilos Específicos del Login (Tarjetas) */
+.login-wrapper {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 80vh;
+}
+
+.card {
+  width: 100%; max-width: 400px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.titulo-parking {
+  font-size: 1.5rem; color: var(--primary);
+  text-align: center; margin-bottom: 20px; font-weight: bold;
+}
+
+.links { margin-top: 15px; font-size: 0.9rem; text-align: center; }
+.link-btn {
+  background: none; color: var(--primary);
+  padding: 0; text-decoration: underline;
+  display: inline; width: auto; font-weight: normal;
+  box-shadow: none;
+}
+.link-btn:hover { background: none; color: var(--primary-dark); transform: none; }
