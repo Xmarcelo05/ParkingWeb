@@ -1,0 +1,7 @@
+organization=xmarcelo05
+projectKey=Xmarcelo05_ParkingWeb
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.89164
+dashboardUrl=https://sonarcloud.io/dashboard?id=Xmarcelo05_ParkingWeb
+ceTaskId=AZ6K3-oUUaYBtZJ6d1Pc
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZ6K3-oUUaYBtZJ6d1Pc
